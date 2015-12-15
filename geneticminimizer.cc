@@ -20,15 +20,17 @@ GeneticMinimizer::GeneticMinimizer(double (*minimizeme)(double*, int), int n, in
         for (int j=0; j < N; ++j)
             parents[i][j]=dis(gen);
     }
+    fitness=new double[M];
 }
 
 GeneticMinimizer::~GeneticMinimizer() {
-    for (int i = 0; i < M; ++i) {
+    for (int i = 0; i < M; i++) {
         delete[] parents[i];
         delete[] children[i];
     }
     delete[] parents;
     delete[] children;
+    delete[] fitness;
 }
 
 void GeneticMinimizer::refine() {
@@ -36,10 +38,9 @@ void GeneticMinimizer::refine() {
         return; // Perfect -> no need for further refinement
     // For each row, fire a pointer over to the objective function
     // Convert from cost to fitness by fitness=1/cost. If cost = 0, you win. Done.
-    double *fitness=new double[M];
     double lowest_cost=HUGE_VAL;
     int lowest_cost_row=0;
-    for (int i=0; i<M; ++i) {
+    for (int i=0; i<M; i++) {
         fitness[i]=objective(parents[i],N);
         if (fitness[i]<lowest_cost) {
             lowest_cost=fitness[i];
@@ -79,7 +80,6 @@ void GeneticMinimizer::refine() {
     double **switcheroo = children;
     children = parents;
     parents = switcheroo;
-    delete fitness;
     std::cout<<"Lowest cost was: "<<lowest_cost<<std::endl;
 }
 
@@ -90,14 +90,14 @@ void GeneticMinimizer::barf() {
         //Need to locate a winner
         double lowest_cost = HUGE_VAL;
         for (int i = 0; i < M; ++i) {
-            fitness=objective( parents[i],N );
-            if ( fitness<lowest_cost ) {
+            fitness=objective( parents[i], N);
+            if ( fitness < lowest_cost ) {
                 winner=parents[i];
                 lowest_cost=fitness;
             }
         }
     }
-    fitness=objective(winner,N);
+    fitness = objective( winner, N);
     for (int i = 0; i < N; ++i)
         std::cout << winner[i] << " ";
     std::cout << "with final cost " << fitness << std::endl;

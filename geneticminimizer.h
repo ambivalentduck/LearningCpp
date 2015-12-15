@@ -28,7 +28,7 @@ class GeneticMinimizer {
         double **parents, **children;
         double *winner;
         bool winner_known;
-    
+    double * fitness;
 };
 
 #endif
